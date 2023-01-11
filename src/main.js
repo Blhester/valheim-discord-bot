@@ -1,5 +1,5 @@
 const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
-
+const exec = require('child_process').exec;
 
 const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages]});
 
@@ -17,12 +17,26 @@ client.on('messageCreate', (message) => {
     const command = args.shift().toLowerCase();
 
     if(command === 'ping') {
-        message.channel.send({embeds: [new EmbedBuilder().setDescription('pong').setAuthor({
-            name: message.author.username,
-            iconURL: message.author.defaultAvatarURL,
-        }).setColor('Gold')]});
+        sendMessage(message, 'pong');
+    }
+
+    if(command === 'status') {
+        let pidOfServer;
+        exec('systemctl status | grep valheim', (error, stdout, stderr) => {
+            if (error != null)  {
+                sendMessage(message, 'Unable to find the PID of the server. The server status is offline'); 
+            } else if (stdout !== null) {
+                sendMessage(message, stdout.toString());
+            }
+        });
     }
 });
 
-client.login('MTA2MjU5Mzc5NTc3NjA2MTQ2MA.GzrxMf.Fxt-Uib2ntpjLsLOymVqFwVV41QOAjDqV2ltYE');
+function sendMessage(message, messageToSend) {
+    message.channel.send({embeds: [new EmbedBuilder().setDescription(messageToSend).setAuthor({
+        name: message.author.username,
+        iconURL: message.author.defaultAvatarURL,
+    }).setColor('Gold')]});
+}
 
+client.login('MTA2MjU5Mzc5NTc3NjA2MTQ2MA.GzrxMf.Fxt-Uib2ntpjLsLOymVqFwVV41QOAjDqV2ltYE');
