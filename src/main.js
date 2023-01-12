@@ -1,12 +1,9 @@
 const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const exec = require('child_process').exec;
-const spawn = require('child_process').spawn;
 
 const commandPrefix = '!';
 const serverLocation = '/home/pi/valheim_server/';
 
-const fs = require('fs');
-outputFile = fs.openSync(`${serverLocation}`, 'a');
 const config = require('config');
 const botSecret = config.get('bot.secret');
 
