@@ -71,9 +71,10 @@ function executeStartScript(message) {
             sendMessage(message, 'There was an error when trying to start the server');
             console.log(error.toString());
         } else if (stdout !== null) {
-
+            sendMessage(message, 'Starting server!');
+            console.log(stdout.toString());
         }
-    });
+    }).unref();
 }
 
 function sendMessage(message, messageToSend) {
