@@ -71,6 +71,7 @@ function executeStartScript(message) {
             console.log(error.toString());
         } else {
             sendMessage(message, 'Server is now booting up');
+            console.log(stdout.toString());
         }
     });
 }
