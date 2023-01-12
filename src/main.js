@@ -22,11 +22,19 @@ client.on('messageCreate', (message) => {
 
     if(command === 'status') {
         let pidOfServer;
-        exec('systemctl status | grep valheim', (error, stdout, stderr) => {
+        exec('pidof valheim_server.x86_64', (error, stdout, stderr) => {
             if (error != null)  {
-                sendMessage(message, 'Unable to find the PID of the server. The server status is offline'); 
+                sendMessage(message, 'Unable to find the status of the server. The server must be offline'); 
             } else if (stdout !== null) {
-                sendMessage(message, stdout.toString());
+		pidOfServer = stdout.toString().trim();
+		exec(`ps -p ${pidOfServer} -o etime`, (error, stdout) => {
+			if(error != null) {
+			  sendMessage(message, 'Unable to find the status of the server. The server must be offline');
+			} else {
+			  sendMessage(message, stdout.toString());	
+			}
+		});
+	      }	 
             }
         });
     }
@@ -39,4 +47,4 @@ function sendMessage(message, messageToSend) {
     }).setColor('Gold')]});
 }
 
-client.login('MTA2MjU5Mzc5NTc3NjA2MTQ2MA.GzrxMf.Fxt-Uib2ntpjLsLOymVqFwVV41QOAjDqV2ltYE');
+client.login('MTA2MjU5Mzc5NTc3NjA2MTQ2MA.GYUH2C.FZDkLgGYUhpTiHxQl_PtBW_wKQU3LgHqRTJhVE');
