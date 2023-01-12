@@ -1,5 +1,5 @@
 const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
-const exec = require('child_process').execSync;
+const exec = require('child_process').exec;
 const config = require('config');
 const botSecret = config.get('bot.secret');
 
@@ -61,7 +61,7 @@ client.on('messageCreate', (message) => {
 });
 
 function executeStartScript(message) {
-    exec(`nohup ${serverLocation}./start_server.sh &`, (error, stdout) => {
+    exec(`${serverLocation}./start_server.sh`, (error, stdout) => {
         if (error != null) {
             sendMessage(message, 'Something went wrong when trying to start the server.');
         } else {
