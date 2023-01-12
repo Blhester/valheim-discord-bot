@@ -41,7 +41,7 @@ client.on('messageCreate', (message) => {
                     }
                 });
 	        }	 
-        });
+        }).unref();
     }
 
     if(command === 'status') {
@@ -73,6 +73,8 @@ function executeStartScript(message) {
         } else if (stdout !== null) {
             sendMessage(message, 'Starting server!');
             console.log(stdout.toString());
+        } else if (stderr != null) {
+            
         }
     }).unref();
 }
