@@ -69,7 +69,7 @@ client.on('messageCreate', (message) => {
 });
 
 function executeStartScript(message) {
-    spawn(`${serverLocation}./start_server.sh`, {
+    spawn(`sudo ${serverLocation}./start_server.sh`, {
         stdio: ['ignore', outputFile, 'ignore'],
         detached: true
     }).unref();
