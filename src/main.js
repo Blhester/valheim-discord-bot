@@ -66,7 +66,6 @@ function executeStartScript(message) {
             sendMessage(message, 'Something went wrong when trying to start the server.');
         } else {
             sendMessage(message, 'Server is now booting up');
-            exec('disown');
         }
     });
 }
