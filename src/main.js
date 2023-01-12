@@ -1,5 +1,7 @@
 const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const exec = require('child_process').exec;
+const config = require('config');
+const botSecret = config.get('bot.secret');
 
 const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages]});
 
@@ -28,14 +30,14 @@ client.on('messageCreate', (message) => {
                 sendMessage(message, 'Unable to find the status of the server. The server must be offline');
                 executeStartScript(message); 
             } else if (stdout !== null) {
-                exec(`kill -9 ${pidOfServer}`, (error, stdout) => {
+                exec(`sudo kill -9 ${pidOfServer}`, (error, stdout) => {
                     if(error != null) {
                         sendMessage(message, 'Error when trying to kill the server');
                     } else {
+                        executeStartScript(message);
                         sendMessage(message, 'Server is online and has been for ' + stdout.toString());	
                     }
                 });
-                executeStartScript(message);
 	        }	 
         });
     }
@@ -60,11 +62,12 @@ client.on('messageCreate', (message) => {
 });
 
 function executeStartScript(message) {
-    exec(`${serverLocation}./start_server.sh & | disown`, (error, stdout) => {
+    exec(`${serverLocation}./start_server.sh &`, (error, stdout) => {
         if (error != null) {
             sendMessage(message, 'Something went wrong when trying to start the server.');
         } else {
             sendMessage(message, 'Server is now booting up');
+            exec('disown');
         }
     });
 }
@@ -76,4 +79,4 @@ function sendMessage(message, messageToSend) {
     }).setColor('Gold')]});
 }
 
-client.login('MTA2MjU5Mzc5NTc3NjA2MTQ2MA.GYUH2C.FZDkLgGYUhpTiHxQl_PtBW_wKQU3LgHqRTJhVE');
+client.login(botSecret);
