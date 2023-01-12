@@ -26,18 +26,17 @@ client.on('messageCreate', (message) => {
             if (error != null)  {
                 sendMessage(message, 'Unable to find the status of the server. The server must be offline'); 
             } else if (stdout !== null) {
-		pidOfServer = stdout.toString().trim();
-		exec(`ps -p ${pidOfServer} -o etime`, (error, stdout) => {
-			if(error != null) {
-			  sendMessage(message, 'Unable to find the status of the server. The server must be offline');
-			} else {
-			  sendMessage(message, stdout.toString());	
-			}
-		});
-	      }	 
-            }
+                pidOfServer = stdout.toString().trim();
+                exec(`ps -p ${pidOfServer} -o etime`, (error, stdout) => {
+                    if(error != null) {
+                        sendMessage(message, 'Unable to find the status of the server. The server must be offline');
+                    } else {
+                        sendMessage(message, 'Server is online and has been for ' + stdout.toString());	
+                    }
+                });
+	        }	 
         });
-    }
+    };
 });
 
 function sendMessage(message, messageToSend) {
