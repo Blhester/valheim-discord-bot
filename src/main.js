@@ -6,7 +6,7 @@ const commandPrefix = '!';
 const serverLocation = '/home/pi/valheim_server/';
 
 const fs = require('fs');
-outputFile = fs.openSync(`${serverLocation}`, 'a');
+outputFile = fs.openSync(`${serverLocation}output.log`, 'a');
 const config = require('config');
 const botSecret = config.get('bot.secret');
 
