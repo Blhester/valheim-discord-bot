@@ -6,7 +6,7 @@ const commandPrefix = '!';
 const serverLocation = '/home/pi/valheim_server/';
 
 const fs = require('fs');
-outputFile = fs.openSync(`${serverLocation}output.log`, 'a');
+outputFile = fs.openSync(`${serverLocation}`, 'a');
 const config = require('config');
 const botSecret = config.get('bot.secret');
 
@@ -69,7 +69,7 @@ client.on('messageCreate', (message) => {
 });
 
 function executeStartScript(message) {
-    spawn(`cd ${serverLocation} && ./start_server.sh`, {
+    spawn(`${serverLocation}./start_server.sh`, {
         stdio: ['ignore', outputFile, 'ignore'],
         detached: true
     }).unref();
