@@ -25,11 +25,12 @@ client.on('messageCreate', (message) => {
 
     if(command === 'restart_server') {
         let pidOfServer;
-        exec('pidof valheim_server.x86_64', (error, stdout, stderr) => {
+        exec('pidof -s valheim_server.x86_64', (error, stdout, stderr) => {
             if (error != null)  {
                 sendMessage(message, 'Server is offline, attempting to boot up server');
                 executeStartScript(message); 
             } else if (stdout !== null) {
+                pidOfServer = stdout.toString().trim();
                 exec(`sudo kill -9 ${pidOfServer}`, (error, stdout) => {
                     if(error != null) {
                         sendMessage(message, 'Error when trying to kill the server');
@@ -44,12 +45,12 @@ client.on('messageCreate', (message) => {
 
     if(command === 'status') {
         let pidOfServer;
-        exec('pidof valheim_server.x86_64', (error, stdout, stderr) => {
+        exec('pidof -s valheim_server.x86_64', (error, stdout, stderr) => {
             if (error != null)  {
                 sendMessage(message, 'Unable to find the status of the server. The server must be offline');
                 console.log(error.toString()); 
             } else if (stdout !== null) {
-                pidOfServer = stdout.toString().trim().replace('ELAPSED', '');
+                pidOfServer = stdout.toString().trim();
                 exec(`ps -p ${pidOfServer} -o etime`, (error, stdout) => {
                     if(error != null) {
                         sendMessage(message, 'Unable to find the status of the server. The server must be offline');
