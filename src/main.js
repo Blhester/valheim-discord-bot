@@ -1,12 +1,16 @@
 const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const exec = require('child_process').exec;
+const spawn = require('child_process').spawn;
+
+const commandPrefix = '!';
+const serverLocation = '/home/pi/valheim_server/';
+
+const fs = require('fs');
+outputFile = fs.openSync(`${serverLocation}`, 'a');
 const config = require('config');
 const botSecret = config.get('bot.secret');
 
 const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages]});
-
-const commandPrefix = '!';
-const serverLocation = '/home/pi/valheim_server/';
 
 client.once('ready', () => {
     console.log('Valorant Bot is online!');
@@ -65,15 +69,10 @@ client.on('messageCreate', (message) => {
 });
 
 function executeStartScript(message) {
-    exec(`${serverLocation}./start_server.sh`, (error, stdout) => {
-        if (error != null) {
-            sendMessage(message, 'Something went wrong when trying to start the server.');
-            console.log(error.toString());
-        } else {
-            sendMessage(message, 'Server is now booting up');
-            console.log(stdout.toString());
-        }
-    });
+    spawn(`${serverLocation}./start_server.sh`, {
+        stdio: ['ignore', outputFile, 'ignore'],
+        detached: true
+    }).unref();
 }
 
 function sendMessage(message, messageToSend) {
