@@ -1,5 +1,5 @@
 const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
-const exec = require('child_process').exec;
+const exec = require('child_process').execSync;
 const config = require('config');
 const botSecret = config.get('bot.secret');
 
