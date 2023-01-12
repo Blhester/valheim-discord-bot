@@ -28,6 +28,13 @@ client.on('messageCreate', (message) => {
                 sendMessage(message, 'Unable to find the status of the server. The server must be offline');
                 executeStartScript(message); 
             } else if (stdout !== null) {
+                exec(`kill -9 ${pidOfServer}`, (error, stdout) => {
+                    if(error != null) {
+                        sendMessage(message, 'Error when trying to kill the server');
+                    } else {
+                        sendMessage(message, 'Server is online and has been for ' + stdout.toString());	
+                    }
+                });
                 executeStartScript(message);
 	        }	 
         });
