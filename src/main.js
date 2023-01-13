@@ -1,5 +1,6 @@
 const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const exec = require('child_process').exec;
+const execFile = require('child_process').execFile;
 
 const commandPrefix = '!';
 const serverLocation = '/home/pi/valheim_server/';
@@ -66,7 +67,7 @@ client.on('messageCreate', (message) => {
 });
 
 function executeStartScript(message) {
-    exec(`${serverLocation}./start_server.sh`, (error, stdout, stderr) => {
+    execFile(`${serverLocation}./start_server.sh`, (error, stdout, stderr) => {
         if (error !== null) {
             sendMessage(message, 'There was an error when trying to start the server');
             console.log(error.toString());
