@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder, RichEmbed } = require('discord.js');
 const exec = require('child_process').exec;
 const execFile = require('child_process').execFile;
 
@@ -8,10 +8,21 @@ const serverLocation = '/home/pi/valheim_server/';
 const config = require('config');
 const botSecret = config.get('bot.secret');
 
-const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages]});
+const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers]});
 
 client.once('ready', () => {
     console.log('Valorant Bot is online!');
+});
+
+client.on('guildMemberAdd', (member) => {
+    const embed = new RichEmbed()
+    .setAuthor(member.user.tag, member.user.displayAvatarURL)
+    .setTitle('Welcome!')
+    .setDescription(`${member} has joined the server.`)
+    .setColor('Gold')
+    .setFooter('Checkout the sticky in general for the server information. https://discordapp.com/channels/1062472969701560380/1062921919122391103/1063277885776986153');
+
+    message.channel.find((channel) => channel.name.toLowerCase() === 'general').send({embed});
 });
 
 client.on('messageCreate', (message) => {
