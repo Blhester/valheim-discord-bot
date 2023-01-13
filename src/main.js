@@ -74,7 +74,7 @@ function executeStartScript(message) {
             sendMessage(message, 'Starting server!');
             console.log(stdout.toString());
         } else if (stderr != null) {
-            
+            console.log(stderr.toString());
         }
     }).unref();
 }
