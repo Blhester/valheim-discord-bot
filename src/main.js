@@ -56,7 +56,7 @@ client.on('messageCreate', (message) => {
                     if(error !== null) {
                         sendMessage(message, 'Unable to find the status of the server. The server must be offline');
                         console.log(error.toString());
-                    } else {
+                    } else if (stdout !== null) {
                         sendMessage(message, 'Server is online and has been for ' + stdout.toString().trim());	
                     }
                 });
@@ -82,7 +82,7 @@ function executeStartScript(message) {
 function sendMessage(message, messageToSend) {
     message.channel.send({embeds: [new EmbedBuilder().setDescription(messageToSend).setAuthor({
         name: 'Hello, ' + message.author.username,
-        iconURL: message.author.avatarURL,
+        iconURL: message.mentions.users.first().avatarURL,
     }).setColor('Gold')]});
 }
 
