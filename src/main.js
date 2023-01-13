@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, EmbedBuilder, RichEmbed } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const exec = require('child_process').exec;
 const execFile = require('child_process').execFile;
 
@@ -15,14 +15,17 @@ client.once('ready', () => {
 });
 
 client.on('guildMemberAdd', (member) => {
-    const embed = new RichEmbed()
-    .setAuthor(member.user.tag, member.user.displayAvatarURL)
+    const embed = new EmbedBuilder()
+    .setAuthor({
+        name: 'Hello, ' + member.user.tag,
+        iconURL: member.user.displayAvatarURL,
+    })
     .setTitle('Welcome!')
     .setDescription(`${member} has joined the server.`)
     .setFooter('Checkout the sticky in general for the server information.\nhttps://discordapp.com/channels/1062472969701560380/1062921919122391103/1063277885776986153')
     .setColor('Gold');
 
-    sendEmbedToChannel('general', embed);
+    sendEmbedToChannel(embed);
 });
 
 client.on('messageCreate', (message) => {
@@ -36,14 +39,17 @@ client.on('messageCreate', (message) => {
     }
 
     if(command.startsWith('echo')) {
-        const embed = new RichEmbed()
-        .setAuthor(message.author.username, message.author.avatarURL({ dynamic:true }))
+        const embed = new EmbedBuilder()
+        .setAuthor({
+            name: 'Hello, ' + message.author.username,
+            iconURL: message.author.avatarURL({ dynamic:true }),
+        })
         .setTitle('Test Method (Echo)')
-        .setDescription(`${message.author.username} said "${command.substring(6)}"`)
-        .setFooter('End Of Method.')
+        .setDescription(`${message.author.username} said "${args}"`)
+        .setFooter({ text: 'End of test Method'})
         .setColor('Gold');
 
-        sendEmbedToChannel('general', embed);
+        sendEmbedToChannel(embed);
     }
 
     if(command === 'restart_server') {
@@ -110,8 +116,7 @@ function sendMessage(message, messageToSend) {
 }
 
 
-function sendEmbedToChannel(channelName, embed) {
-    message.channel.find((channel) => channel.name.toLowerCase() === channelName).send({embed});
+function sendEmbedToChannel(embed) {
+    client.channels.fetch('1062921919122391103').then(channel => channel.send({embeds: [embed]}));
 }
-
 client.login(botSecret);
