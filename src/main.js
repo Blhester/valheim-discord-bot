@@ -52,12 +52,12 @@ client.on('messageCreate', (message) => {
                 console.log(error.toString()); 
             } else if (stdout !== null) {
                 pidOfServer = stdout.toString().trim();
-                exec(`ps -p ${pidOfServer} -o etime`, (error, stdout) => {
+                exec(`ps -p ${pidOfServer} -o etime | egrep '[0-9]{1,2}:[0-9]{1,2}'`, (error, stdout) => {
                     if(error !== null) {
                         sendMessage(message, 'Unable to find the status of the server. The server must be offline');
                         console.log(error.toString());
                     } else {
-                        sendMessage(message, 'Server is online and has been for ' + stdout.toString().trim().replace('ELAPSED', ''));	
+                        sendMessage(message, 'Server is online and has been for ' + stdout.toString().trim());	
                     }
                 });
 	        }	 
