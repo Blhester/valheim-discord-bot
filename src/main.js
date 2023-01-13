@@ -19,10 +19,10 @@ client.on('guildMemberAdd', (member) => {
     .setAuthor(member.user.tag, member.user.displayAvatarURL)
     .setTitle('Welcome!')
     .setDescription(`${member} has joined the server.`)
-    .setColor('Gold')
-    .setFooter('Checkout the sticky in general for the server information. https://discordapp.com/channels/1062472969701560380/1062921919122391103/1063277885776986153');
+    .setFooter('Checkout the sticky in general for the server information.\nhttps://discordapp.com/channels/1062472969701560380/1062921919122391103/1063277885776986153')
+    .setColor('Gold');
 
-    message.channel.find((channel) => channel.name.toLowerCase() === 'general').send({embed});
+    sendEmbedToChannel('general', embed);
 });
 
 client.on('messageCreate', (message) => {
@@ -33,6 +33,17 @@ client.on('messageCreate', (message) => {
 
     if(command === 'ping') {
         sendMessage(message, 'pong');
+    }
+
+    if(command.startsWith('echo')) {
+        const embed = new RichEmbed()
+        .setAuthor(message.author.username, message.author.avatarURL({ dynamic:true }))
+        .setTitle('Test Method (Echo)')
+        .setDescription(`${message.author.username} said "${command.substring(6)}"`)
+        .setFooter('End Of Method.')
+        .setColor('Gold');
+
+        sendEmbedToChannel('general', embed);
     }
 
     if(command === 'restart_server') {
@@ -96,6 +107,11 @@ function sendMessage(message, messageToSend) {
         name: 'Hello, ' + message.author.username,
         iconURL: message.author.avatarURL({ dynamic:true }),
     }).setColor('Gold')]});
+}
+
+
+function sendEmbedToChannel(channelName, embed) {
+    message.channel.find((channel) => channel.name.toLowerCase() === channelName).send({embed});
 }
 
 client.login(botSecret);
