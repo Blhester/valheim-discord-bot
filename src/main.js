@@ -80,11 +80,10 @@ function executeStartScript(message) {
 }
 
 function sendMessage(message, messageToSend) {
-    const user = message.mentions.users.first() || message.author;
 
     message.channel.send({embeds: [new EmbedBuilder().setDescription(messageToSend).setAuthor({
         name: 'Hello, ' + message.author.username,
-        iconURL: user.displayAvatarURL,
+        iconURL: message.author.avatarURL({ dynamic:true }),
     }).setColor('Gold')]});
 }
 
