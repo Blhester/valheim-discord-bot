@@ -15,9 +15,8 @@ client.once('ready', () => {
 });
 
 client.on('messageCreate', (message) => {
-    console.log(`Got message ${message.content}`);
-    if(!message.content.startsWith(commandPrefix) || message.author.bot) return;
-
+    if(!message.content.startsWith(commandPrefix) || message.author.bot || message.channel.name !== 'valheim-bot') return;
+    console.log(`Got command ${message.content}`);
     const args = message.content.slice(commandPrefix.length).split(/ +/);
     const command = args.shift().toLowerCase();
 
