@@ -17,12 +17,12 @@ client.once('ready', () => {
 client.on('guildMemberAdd', (member) => {
     const embed = new EmbedBuilder()
     .setAuthor({
-        name: `Hello, ${member.user.displayName}`,
+        name: `Hello, ${member.user.username}`,
         iconURL: member.user.displayAvatarURL({ dynamic:true }),
     })
     .setTitle('Welcome!')
     .setDescription(`${member} has joined the server.`)
-    .setFooter({text: 'Checkout the sticky in general for the server information.\nhttps://discordapp.com/channels/1062472969701560380/1062921919122391103/1063277885776986153'})
+    .setFooter({text: 'Checkout the sticky in general for the server information.\nhttps://discordapp.com/channels/1062472969701560380/1062921919122391103/1063337872096247858'})
     .setColor('Gold');
 
     sendEmbedToChannel(embed);
@@ -45,7 +45,7 @@ client.on('messageCreate', (message) => {
             iconURL: message.author.avatarURL({ dynamic:true }),
         })
         .setTitle('Test Method (Echo)')
-        .setDescription(`${message.author.username} said "${args}"`)
+        .setDescription(`${message.author.username} said "${message.content.slice(commandPrefix.length + command.length)}"`)
         .setFooter({ text: 'End of test Method'})
         .setColor('Gold');
 
@@ -91,6 +91,26 @@ client.on('messageCreate', (message) => {
 	        }	 
         });
     };
+
+    if(command === 'stop_server') {
+        let pidOfServer;
+        exec('pidof -s valheim_server.x86_64', (error, stdout, stderr) => {
+            if (error !== null)  {
+                sendMessage(message, 'Unable to find the status of the server. The server must be offline');
+                console.log(error.toString()); 
+            } else if (stdout !== null) {
+                pidOfServer = stdout.toString().trim();
+                exec(`sudo kill -9 ${pidOfServer}`, (error, stdout) => {
+                    if(error !== null) {
+                        sendMessage(message, 'Error when trying to kill the server');
+                        console.log(error.toString());
+                    } else if (stdout !== null) {
+                        sendMessage(message, 'Server has been shut down');
+                    }
+                });
+	        }	 
+        });
+    }
 });
 
 function executeStartScript(message) {
