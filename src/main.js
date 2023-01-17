@@ -41,12 +41,11 @@ client.on('messageCreate', (message) => {
     if(command.startsWith('echo')) {
         const embed = new EmbedBuilder()
         .setAuthor({
-            name: 'Hello, ' + message.author.username,
+            name: 'Hello, ' + message.channel.name,
             iconURL: message.author.avatarURL({ dynamic:true }),
         })
-        .setTitle('Test Method (Echo)')
+        .setTitle('Echo')
         .setDescription(`${message.author.username} said "${message.content.slice(commandPrefix.length + command.length)}"`)
-        .setFooter({ text: 'End of test Method'})
         .setColor('Gold');
 
         sendEmbedToChannel(embed);
