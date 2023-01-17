@@ -22,7 +22,7 @@ client.on('guildMemberAdd', (member) => {
     })
     .setTitle('Welcome!')
     .setDescription(`${member} has joined the server.`)
-    .setFooter('Checkout the sticky in general for the server information.\nhttps://discordapp.com/channels/1062472969701560380/1062921919122391103/1063277885776986153')
+    .setFooter({text: 'Checkout the sticky in general for the server information.\nhttps://discordapp.com/channels/1062472969701560380/1062921919122391103/1063277885776986153'})
     .setColor('Gold');
 
     sendEmbedToChannel(embed);
