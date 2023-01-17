@@ -22,7 +22,7 @@ client.on('guildMemberAdd', (member) => {
     })
     .setTitle('Welcome!')
     .setDescription(`${member} has joined the server.`)
-    .setFooter({text: 'Checkout the sticky in general for the server information.\nhttps://discordapp.com/channels/1062472969701560380/1062921919122391103/1063337872096247858'})
+    .setFooter({text: 'Checkout the sticky in general for the server information. https://discordapp.com/channels/1062472969701560380/1064934406080430180/1064934471662567444',})
     .setColor('Gold');
 
     sendEmbedToChannel(embed);
@@ -137,6 +137,6 @@ function sendMessage(message, messageToSend) {
 
 
 function sendEmbedToChannel(embed) {
-    client.channels.fetch('1062921919122391103').then(channel => channel.send({embeds: [embed]}));
+    client.channels.fetch('1064934406080430180').then(channel => channel.send({embeds: [embed]}));
 }
 client.login(botSecret);
