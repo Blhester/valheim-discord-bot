@@ -17,8 +17,8 @@ client.once('ready', () => {
 client.on('guildMemberAdd', (member) => {
     const embed = new EmbedBuilder()
     .setAuthor({
-        name: 'Hello, ' + member.user.tag,
-        iconURL: member.user.displayAvatarURL,
+        name: 'Hello, ' + member.displayName,
+        iconURL: member.displayAvatarURL,
     })
     .setTitle('Welcome!')
     .setDescription(`${member} has joined the server.`)
