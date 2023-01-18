@@ -58,6 +58,7 @@ client.on('messageCreate', (message) => {
         exec('pidof -s valheim_server.x86_64', (error, stdout, stderr) => {
             if (error !== null)  {
                 sendMessage(message, 'Server is offline, attempting to boot up server');
+                timeOfLastRestart = new Date(Date.now());
                 executeStartScript(message); 
             } else if (stdout !== null) {
                 pidOfServer = stdout.toString().trim();
@@ -66,6 +67,7 @@ client.on('messageCreate', (message) => {
                         sendMessage(message, 'Error when trying to kill the server');
                         console.log(error.toString());
                     } else {
+                        timeOfLastRestart = new Date(Date.now());
                         executeStartScript(message);
                     }
                 }).unref();
@@ -140,7 +142,6 @@ function executeStartScript(message) {
             console.log(stderr.toString());
         } else {
             sendMessage(message, 'Starting Server!')
-            timeOfLastRestart = new Date(Date.now());
             console.log(stdout.toString());
         } 
     }).unref();
