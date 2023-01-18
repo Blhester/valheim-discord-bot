@@ -53,6 +53,18 @@ client.on('messageCreate', (message) => {
         sendEmbedToChannel(embed);
     }
 
+    if(command === 'players') {
+       exec(`cat ${serverLocation}output.log | egrep -o "Connections [0-9]{1,2}" | tail -l | egrep -o "[0-9]{1,2}"`, (error, stdout) => {
+        if(error !== null) {
+            sendMessage(message, `There was an error trying to find the number of players on the server`);
+            console.log(error.toString());
+        } else if (stdout !== null) {
+            numberOfPlayersOnServer = stdout.toString().trim();
+            sendMessage(message, `There are currently ${numberOfPlayersOnServer} player(s) on the server`);
+        }
+       }); 
+    }
+
     if(command === 'stop_server') {
         let pidOfServer;
         exec('pidof -s valheim_server.x86_64', (error, stdout, stderr) => {
