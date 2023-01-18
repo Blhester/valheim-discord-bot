@@ -68,7 +68,7 @@ client.on('messageCreate', (message) => {
                     } else {
                         executeStartScript(message);
                     }
-                });
+                }).unref();
 	        }	 
         }).unref();
     }
@@ -101,11 +101,11 @@ client.on('messageCreate', (message) => {
                                     sendMessage(message, `Server has been online since ${timeOfServerBootInLogs.toString()}`);	
                                 }
                             }
-                        })
+                        }).unref()
                     }
-                });
+                }).unref();
 	        }	 
-        });
+        }).unref();
     };
 
     if(command === 'stop_server') {
@@ -123,9 +123,9 @@ client.on('messageCreate', (message) => {
                     } else if (stdout !== null) {
                         sendMessage(message, 'Server has been shut down');
                     }
-                });
+                }).unref();
 	        }	 
-        });
+        }).unref();
     }
 });
 
