@@ -7,6 +7,7 @@ const serverLocation = '/home/pi/valheim_server/';
 
 const config = require('config');
 const botSecret = config.get('bot.secret');
+const milliSecondsInAnHour = 3600000;
 
 const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers]});
 let timeOfLastRestart;
@@ -97,8 +98,8 @@ client.on('messageCreate', (message) => {
                                 if (timeOfLastRestart > timeOfServerBootInLogs) {
                                     sendMessage(message, 'Server is still booting back up');
                                 } else {
-                                    let timeSinceRestart = Date.now().getMinutes() - timeOfServerBootInLogs.getMinutes();
-                                    sendMessage(message, `Server is online and has been for ${timeSinceRestart/60} minutes`);	
+                                    let timeSinceRestart = Date.now() - timeOfServerBootInLogs;
+                                    sendMessage(message, `Server has been online since ${timeOfServerBootInLogs.toString()} or ${timeSinceRestart/milliSecondsInAnHour} hour(s)`);	
                                 }
                             }
                         })
