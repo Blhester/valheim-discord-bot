@@ -10,7 +10,7 @@ const botSecret = config.get('bot.secret');
 const milliSecondsInAnHour = 3600000;
 
 const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers]});
-let timeOfLastRestart;
+var timeOfLastRestart;
 
 client.once('ready', () => {
     console.log('Valorant Bot is online!');
@@ -92,6 +92,7 @@ client.on('messageCreate', (message) => {
                             } else if (stdout !== null) {
                                 let timeOfServerBootInLogs = new Date(stdout.toString().trim().slice(0, 18));
                                 if (timeOfLastRestart === null) {
+                                    console.log(`Time of lastRestart is null`);
                                     timeOfLastRestart = timeOfServerBootInLogs;
                                 }
                                 console.log(`Time of ${timeOfServerBootInLogs}`)
@@ -139,7 +140,7 @@ function executeStartScript(message) {
             console.log(stderr.toString());
         } else {
             sendMessage(message, 'Starting Server!')
-            timeOfLastRestart = new Date();
+            timeOfLastRestart = new Date(Date.now());
             console.log(stdout.toString());
         } 
     }).unref();
