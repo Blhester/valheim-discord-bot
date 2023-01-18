@@ -53,9 +53,29 @@ client.on('messageCreate', (message) => {
         sendEmbedToChannel(embed);
     }
 
-    if(command === 'restart_server') {
+    if(command === 'stop_server') {
         let pidOfServer;
         exec('pidof -s valheim_server.x86_64', (error, stdout, stderr) => {
+            if (error !== null)  {
+                sendMessage(message, 'Unable to find the status of the server. The server must be offline');
+                console.log(error.toString()); 
+            } else if (stdout !== null) {
+                pidOfServer = stdout.toString().trim();
+                exec(`sudo kill -9 ${pidOfServer}`, (error, stdout) => {
+                    if(error !== null) {
+                        sendMessage(message, 'Error when trying to kill the server');
+                        console.log(error.toString());
+                    } else if (stdout !== null) {
+                        sendMessage(message, 'Server has been shut down');
+                    }
+                }).unref();
+	        }	 
+        }).unref();
+    }
+
+    if(command === 'restart_server') {
+        let pidOfServer;
+        exec('pidof -s valheim_server.x86_64', (error, stdout) => {
             if (error !== null)  {
                 sendMessage(message, 'Server is offline, attempting to boot up server');
                 timeOfLastRestart = new Date(Date.now());
@@ -66,7 +86,7 @@ client.on('messageCreate', (message) => {
                     if(error !== null) {
                         sendMessage(message, 'Error when trying to kill the server');
                         console.log(error.toString());
-                    } else {
+                    } else if (stdout !== null) {
                         timeOfLastRestart = new Date(Date.now());
                         executeStartScript(message);
                     }
@@ -77,7 +97,7 @@ client.on('messageCreate', (message) => {
 
     if(command === 'status') {
         let pidOfServer;
-        exec('pidof -s valheim_server.x86_64', (error, stdout, stderr) => {
+        exec('pidof -s valheim_server.x86_64', (error, stdout) => {
             if (error !== null)  {
                 sendMessage(message, 'Unable to find the status of the server. The server must be offline');
                 console.log(error.toString()); 
@@ -101,6 +121,7 @@ client.on('messageCreate', (message) => {
                                 if (timeOfLastRestart > timeOfServerBootInLogs) {
                                     sendMessage(message, 'Server is still booting back up');
                                 } else {
+                                    timeOfLastRestart = timeOfServerBootInLogs;
                                     sendMessage(message, `Server has been online since ${timeOfServerBootInLogs.toString()}`);	
                                 }
                             }
@@ -110,26 +131,6 @@ client.on('messageCreate', (message) => {
 	        }	 
         }).unref();
     };
-
-    if(command === 'stop_server') {
-        let pidOfServer;
-        exec('pidof -s valheim_server.x86_64', (error, stdout, stderr) => {
-            if (error !== null)  {
-                sendMessage(message, 'Unable to find the status of the server. The server must be offline');
-                console.log(error.toString()); 
-            } else if (stdout !== null) {
-                pidOfServer = stdout.toString().trim();
-                exec(`sudo kill -9 ${pidOfServer}`, (error, stdout) => {
-                    if(error !== null) {
-                        sendMessage(message, 'Error when trying to kill the server');
-                        console.log(error.toString());
-                    } else if (stdout !== null) {
-                        sendMessage(message, 'Server has been shut down');
-                    }
-                }).unref();
-	        }	 
-        }).unref();
-    }
 });
 
 function executeStartScript(message) {
