@@ -139,7 +139,7 @@ function executeStartScript(message) {
             console.log(stderr.toString());
         } else {
             sendMessage(message, 'Starting Server!')
-            timeOfLastRestart = Date.now();
+            timeOfLastRestart = new Date();
             console.log(stdout.toString());
         } 
     }).unref();
