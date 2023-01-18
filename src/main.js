@@ -9,6 +9,7 @@ const config = require('config');
 const botSecret = config.get('bot.secret');
 
 const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers]});
+let timeOfLastRestart;
 
 client.once('ready', () => {
     console.log('Valorant Bot is online!');
@@ -84,7 +85,19 @@ client.on('messageCreate', (message) => {
                         sendMessage(message, 'Unable to find the status of the server. The server must be offline');
                         console.log(error.toString());
                     } else if (stdout !== null) {
-                        sendMessage(message, 'Server is online and has been for ' + stdout.toString().trim());	
+                        exec(`cat ${serverLocation}output.log | grep "Load world:" | tail -1`, (error, stdout) => {
+                            if(error !== null) {
+                                console.log(error.toString());                        
+                            } else if (stdout !== null) {
+                                let timeOfServerBootInLogs = Date.parse(stdout.toString().trim().slice(0, 18));
+                                console.log(`Time of `)
+                                if (timeOfLastRestart > timeOfServerBootInLogs) {
+                                    sendMessage(message, 'Server is still booting back up');
+                                } else {
+                                    sendMessage(message, 'Server is online and has been for ' + stdout.toString().trim());	
+                                }
+                            }
+                        })
                     }
                 });
 	        }	 
@@ -117,12 +130,14 @@ function executeStartScript(message) {
         if (error !== null) {
             sendMessage(message, 'There was an error when trying to start the server');
             console.log(error.toString());
-        } else if (stdout !== null) {
-            sendMessage(message, 'Starting server!');
-            console.log(stdout.toString());
         } else if (stderr != null) {
+            sendMessage(message, 'There was an error when trying to start the server');
             console.log(stderr.toString());
-        }
+        } else {
+            sendMessage(message, 'Starting Server!')
+            timeOfLastRestart = Date.now();
+            console.log(stdout.toString());
+        } 
     }).unref();
 }
 
