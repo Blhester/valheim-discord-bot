@@ -97,7 +97,8 @@ client.on('messageCreate', (message) => {
                                 if (timeOfLastRestart > timeOfServerBootInLogs) {
                                     sendMessage(message, 'Server is still booting back up');
                                 } else {
-                                    sendMessage(message, 'Server is online and has been for ' + timeOfServerBootInLogs);	
+                                    let timeSinceRestart = Date.now().getMinutes() - timeOfServerBootInLogs.getMinutes();
+                                    sendMessage(message, `Server is online and has been for ${timeSinceRestart/60} minutes`);	
                                 }
                             }
                         })
