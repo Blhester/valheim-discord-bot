@@ -54,7 +54,7 @@ client.on('messageCreate', (message) => {
     }
 
     if(command === 'players') {
-       exec(`cat ${serverLocation}output.log | egrep -o "Connections [0-9]{1,2}" | tail -l | egrep -o "[0-9]{1,2}"`, (error, stdout) => {
+       exec(`cat ${serverLocation}output.log | egrep -o "Connections [0-9]{1,2}" | tail -1 | egrep -o "[0-9]{1,2}"`, (error, stdout) => {
         if(error !== null) {
             sendMessage(message, `There was an error trying to find the number of players on the server`);
             console.log(error.toString());
