@@ -90,7 +90,7 @@ client.on('messageCreate', (message) => {
                             if(error !== null) {
                                 console.log(error.toString());                        
                             } else if (stdout !== null) {
-                                let timeOfServerBootInLogs = Date.parse(stdout.toString().trim().slice(0, 18));
+                                let timeOfServerBootInLogs = new Date(stdout.toString().trim().slice(0, 18));
                                 if (timeOfLastRestart === null) {
                                     timeOfLastRestart = timeOfServerBootInLogs;
                                 }
@@ -98,8 +98,8 @@ client.on('messageCreate', (message) => {
                                 if (timeOfLastRestart > timeOfServerBootInLogs) {
                                     sendMessage(message, 'Server is still booting back up');
                                 } else {
-                                    let timeSinceRestart = Date.now() - timeOfServerBootInLogs;
-                                    sendMessage(message, `Server has been online since ${timeOfServerBootInLogs.toString()} or ${timeSinceRestart/milliSecondsInAnHour} hour(s)`);	
+                                    let timeSinceRestart = Date.now() - timeOfServerBootInLogs.getMilliseconds();
+                                    sendMessage(message, `Server has been online since ${timeOfServerBootInLogs.toDateString()} or ${(timeSinceRestart/milliSecondsInAnHour).toFixed(1)} hour(s)`);	
                                 }
                             }
                         })
