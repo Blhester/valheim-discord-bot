@@ -3,7 +3,6 @@ import { Client, GatewayIntentBits, EmbedBuilder } from 'discord.js';
 import { exec } from 'child_process';
 import { execFile } from 'child_process';
 import Config from 'config';
-const { get } = Config;
 
 //These are the bot configs being brought in from the default.json file
 const commandPrefix = Config.get('bot.commandPrefix');
@@ -158,6 +157,13 @@ client.on('messageCreate', (message) => {
 
         case CommandTypes.HELP: {
             sendMessage(message, `Here is the list of possible commands:\n${possibleCommands}`);
+            break;
+        }
+
+        case CommandTypes.ROLL: {
+            var maxValueToRoll = new Number(args[0]);
+            var rolledValue = Math.floor(Math.random() * (maxValueToRoll - 1) + 1);
+            sendMessage(message, `You rolled a ${rolledValue}`);
             break;
         }
 
