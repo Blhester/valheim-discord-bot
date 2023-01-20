@@ -1,15 +1,20 @@
-const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
-const exec = require('child_process').exec;
-const execFile = require('child_process').execFile;
-const {PING, ECHO, NUMBER_OF_PLAYERS, STOP_SERVER, START_SERVER, STATUS, HELP} = require('./assets/CommandType');
+import { CommandTypes } from './assets/CommandType.js';
+import { Client, GatewayIntentBits, EmbedBuilder } from 'discord.js';
+import { exec } from 'child_process';
+import { execFile } from 'child_process';
+import Config from 'config';
+const { get } = Config;
 
-const commandPrefix = '!';
-const serverLocation = '/home/pi/valheim_server/';
+//These are the bot configs being brought in from the default.json file
+const commandPrefix = Config.get('bot.commandPrefix');
+const botSecret = Config.get('bot.secret');
+const generalChannel = Config.get('bot.channels.general');
 
-const config = require('config');
-const { CommandTypes } = require('./assets/CommandType');
-const botSecret = config.get('bot.secret');
-const milliSecondsInAnHour = 3600000;
+//These are the server configs being brought in from the default.json file
+const serverLocation = Config.get('server.serverLocation');
+const serverProcessName = Config.get('server.serverProcessName');
+const serverExecutableName = Config.get('server.serverExecutableName');
+const outputLogFilename = Config.get('server.outputLogFilename');
 
 const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers]});
 var timeOfLastRestart;
@@ -33,38 +38,41 @@ client.on('guildMemberAdd', (member) => {
 });
 
 client.on('messageCreate', (message) => {
-    if(!message.content.startsWith(commandPrefix) || message.author.bot || message.channel.name !== 'valheim-bot') return;
-    console.log(`Got command ${message.content}`);
+    if(!message.content.startsWith(commandPrefix) 
+    || message.author.bot 
+    || message.channel.name !== 'valheim-bot') return;
+    
     const args = message.content.slice(commandPrefix.length).split(/ +/);
     const command = args.shift().toLowerCase();
-    const argsWithoutSplit = message.content.slice(commandPrefix.length + command.length);
-    const possibleCommands = () => {
-        var allCommands = Object.values(CommandTypes);
-        var listOfCommands;
-        allCommands.forEach(command => listOfCommands+=`!${command}\n`);
-        return listOfCommands;
-    }
-
+    let possibleCommands = '';
+    
+    var allCommands = Object.values(CommandTypes);
+    allCommands.forEach(command => {
+            possibleCommands=`${possibleCommands}!${command}\n`
+    });
+    
+    console.log(`Got command ${command}`);
     switch(command) {
-        case PING: {
+        case CommandTypes.PING: {
             sendMessage(message, 'pong');
+            break;
         }
 
-        case ECHO: {
+        case CommandTypes.ECHO: {
             const embed = new EmbedBuilder()
             .setAuthor({
-                name: 'Hello, ' + message.channel.name,
+                name: message.author.username,
                 iconURL: message.author.avatarURL({ dynamic:true }),
             })
-            .setTitle('Echo')
-            .setDescription(`${message.author.username} said "${message.content.slice(commandPrefix.length + command.length)}"`)
+            .setDescription(`@everyone ${message.content.slice(commandPrefix.length + command.length)}`)
             .setColor('Gold');
     
             sendEmbedToChannel(embed);
+            break;
         }
 
-        case NUMBER_OF_PLAYERS: {
-            exec(`cat ${serverLocation}output.log | egrep -o "Connections [0-9]{1,2}" | tail -1 | egrep -o "[0-9]{1,2}"`, (error, stdout) => {
+        case CommandTypes.NUMBER_OF_PLAYERS: {
+            exec(`cat ${serverLocation}${outputLogFilename} | egrep -o "Connections [0-9]{1,2}" | tail -1 | egrep -o "[0-9]{1,2}"`, (error, stdout) => {
                 if(error !== null) {
                     sendMessage(message, `There was an error trying to find the number of players on the server`);
                     console.log(error.toString());
@@ -72,12 +80,13 @@ client.on('messageCreate', (message) => {
                     numberOfPlayersOnServer = stdout.toString().trim();
                     sendMessage(message, `There are currently ${numberOfPlayersOnServer} player(s) on the server`);
                 }
-               }); 
+               }).unref();
+               break; 
         }
 
-        case STOP_SERVER: {
+        case CommandTypes.STOP_SERVER: {
             let pidOfServer;
-            exec('pidof -s valheim_server.x86_64', (error, stdout) => {
+            exec(`pidof -s ${serverProcessName}`, (error, stdout) => {
                 if (error !== null)  {
                     sendMessage(message, 'Unable to find the status of the server. The server must be offline');
                     console.log(error.toString()); 
@@ -93,10 +102,11 @@ client.on('messageCreate', (message) => {
                     }).unref();
                 }	 
             }).unref();
+            break;
         }
 
-        case START_SERVER: {
-            exec('pidof -s valheim_server.x86_64', (error, stdout) => {
+        case CommandTypes.START_SERVER: {
+            exec(`pidof -s ${serverProcessName}`, (error, stdout) => {
                 if (error !== null)  {
                     sendMessage(message, 'Attempting to bring the server online. Type !status for details');
                     timeOfLastRestart = new Date(Date.now());
@@ -105,11 +115,12 @@ client.on('messageCreate', (message) => {
                     sendMessage(message, 'Server is currently online already, please !stop_server first.');
                 }	 
             }).unref();
+            break;
         }
 
-        case STATUS: {
+        case CommandTypes.STATUS: {
             let pidOfServer;
-            exec('pidof -s valheim_server.x86_64', (error, stdout) => {
+            exec(`pidof -s ${serverProcessName}`, (error, stdout) => {
                 if (error !== null)  {
                     sendMessage(message, 'Unable to find the status of the server. The server must be offline');
                     console.log(error.toString()); 
@@ -142,20 +153,23 @@ client.on('messageCreate', (message) => {
                     }).unref();
                 }	 
             }).unref();
+            break;
         }
 
-        case HELP: {
-            sendMessage(message, `Here is the list of possible commands:\n${possibleCommands}`)
+        case CommandTypes.HELP: {
+            sendMessage(message, `Here is the list of possible commands:\n${possibleCommands}`);
+            break;
         }
 
         default: {
-            sendMessage(message, `${argsWithoutSplit} is not a valid command. Type !help to get all valid commands`);
+            sendMessage(message, `${command} is not a valid command. Type !help to get all valid commands`);
+            break;
         }
     }
 });
 
 function executeStartScript(message) {
-    execFile(`${serverLocation}./start_server.sh`, (error, stdout, stderr) => {
+    execFile(`${serverLocation}./${serverExecutableName}`, (error, stdout, stderr) => {
         if (error !== null) {
             sendMessage(message, 'There was an error when trying to start the server');
             console.log(error.toString());
@@ -179,6 +193,6 @@ function sendMessage(message, messageToSend) {
 
 
 function sendEmbedToChannel(embed) {
-    client.channels.fetch('1064934406080430180').then(channel => channel.send({embeds: [embed]}));
+    client.channels.fetch(generalChannel).then(channel => channel.send({embeds: [embed]}));
 }
 client.login(botSecret);

@@ -6,4 +6,4 @@ export const CommandTypes = {
     STOP_SERVER: "stop_server",
     START_SERVER: "start_server",
     STATUS: "status",
-}
+};

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A bot for managing the Raspberry Pi valheim server",
   "main": "main.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "run": "node ./src/main.js"

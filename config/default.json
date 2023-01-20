@@ -1,5 +1,15 @@
 {
     "bot" : {
-        "secret": ""
-    }
+        "secret": "",
+        "commandPrefix": "!",
+        "channels": {
+            "general": "1064934406080430180"
+        }
+    },
+    "server": {
+        "serverLocation": "/home/pi/valheim_server/",
+        "serverProcessName": "valheim_server.x86_64",
+        "serverExecutableName": "start_server.sh",
+        "outputLogFilename": "output.log"
+    } 
 }
