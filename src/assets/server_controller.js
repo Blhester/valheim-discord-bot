@@ -2,7 +2,7 @@ import { exec } from "child_process";
 
 
 export function processIsRunning(serverProcessName) {
-    exec(`pidof -s ${serverProcessName}`, (error, stdout) => {
+    return exec(`pidof -s ${serverProcessName}`, (error, stdout) => {
         if (error !== null)  {
             console.log(error.toString());
         } else if (stdout !== null) {
@@ -13,7 +13,7 @@ export function processIsRunning(serverProcessName) {
 }
 
 export function getLastStartTimeOfServerInLogs(outputLogPath) {
-    exec(`cat ${outputLogPath} | grep "Load world:" | tail -1`, (error, stdout) => {
+    return exec(`cat ${outputLogPath} | grep "Load world:" | tail -1`, (error, stdout) => {
         if (error !== null) {
             new Error('Unable to find a startTime in the logs');
             console.log(error.toString());
