@@ -83,7 +83,7 @@ client.on('messageCreate', (message) => {
                     sendMessage(message, `There was an error trying to find the number of players on the server`);
                     console.log(error.toString());
                 } else if (stdout !== null) {
-                    numberOfPlayersOnServer = stdout.toString().trim();
+                    let numberOfPlayersOnServer = stdout.toString().trim();
                     sendMessage(message, `There are currently ${numberOfPlayersOnServer} player(s) on the server`);
                 }
                }).unref();
