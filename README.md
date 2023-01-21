@@ -13,7 +13,7 @@ To run headles in Linux (requires nohup package)
 > nohup run-script run &
 
 To use sh file that runs it headless
-> ./start_bot.sh
+> ./run_bot.sh
 
 # Config
 Add the location and name of your server startup script (note to make sure your start script runs it in headless mode), output.log location, and your discord bot secret.
