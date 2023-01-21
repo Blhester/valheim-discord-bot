@@ -145,14 +145,12 @@ client.on('messageCreate', (message) => {
 });
 
 function stopServer(message) {
-    let pidOfServer;
     exec(`pidof -s ${serverProcessName}`, (error, stdout) => {
         if (error !== null) {
             sendMessage(message, 'Unable to find the status of the server. The server must be offline');
             console.log(error.toString());
         } else if (stdout !== null) {
-            pidOfServer = stdout.toString().trim();
-            exec(`sudo kill -9 ${pidOfServer}`, (error, stdout) => {
+            exec(`sudo kill -9 ${stdout.toString().trim()}`, (error, stdout) => {
                 if (error !== null) {
                     sendMessage(message, 'Error when trying to kill the server');
                     console.log(error.toString());
@@ -162,7 +160,6 @@ function stopServer(message) {
             }).unref();
         }
     }).unref();
-    return pidOfServer;
 }
 
 function executeStartScript(message) {
