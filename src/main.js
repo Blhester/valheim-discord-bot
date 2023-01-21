@@ -116,7 +116,8 @@ client.on('messageCreate', (message) => {
                     timeOfLastRestart = timeOfServerBootInLogs;
                 }
 
-                console.log(`Time of ${timeOfServerBootInLogs}`)
+                console.log(`Time of serverStart in logs ${timeOfServerBootInLogs}`);
+                console.log(`Time of lastRestart ${timeOfLastRestart}`);
                 if (timeOfLastRestart > timeOfServerBootInLogs) {
                     sendMessage(message, 'Server is still booting back up');
                 } else {
