@@ -123,6 +123,8 @@ client.on('messageCreate', (message) => {
                     timeOfLastRestart = timeOfServerBootInLogs;
                     sendMessage(message, `Server has been online since ${timeOfServerBootInLogs.toString()}`);	
                 }          
+            } else {
+                sendMessage(message, `Server is offline`);
             }   
             break;      
         }
