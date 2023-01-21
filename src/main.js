@@ -1,13 +1,15 @@
-import { CommandTypes } from './assets/CommandType.js';
 import { Client, GatewayIntentBits, EmbedBuilder } from 'discord.js';
 import { exec } from 'child_process';
 import { execFile } from 'child_process';
 import Config from 'config';
+import { getLastStartTimeOfServerInLogs, processIsRunning } from './assets/server_controller.js';
 
 //These are the bot configs being brought in from the default.json file
-const commandPrefix = Config.get('bot.commandPrefix');
 const botSecret = Config.get('bot.secret');
+const commandPrefix = Config.get('bot.commandPrefix');
+const commands = Config.get('bot.commands');
 const generalChannel = Config.get('bot.channels.general');
+const serverControlRolls = Config.get('bot.serverControlRolls');
 
 //These are the server configs being brought in from the default.json file
 const serverLocation = Config.get('server.serverLocation');
@@ -15,7 +17,11 @@ const serverProcessName = Config.get('server.serverProcessName');
 const serverExecutableName = Config.get('server.serverExecutableName');
 const outputLogFilename = Config.get('server.outputLogFilename');
 
-const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers]});
+const client = new Client({intents: [
+    GatewayIntentBits.Guilds, 
+    GatewayIntentBits.MessageContent, 
+    GatewayIntentBits.GuildMessages, 
+    GatewayIntentBits.GuildMembers]});
 var timeOfLastRestart;
 
 client.once('ready', () => {
@@ -37,27 +43,29 @@ client.on('guildMemberAdd', (member) => {
 });
 
 client.on('messageCreate', (message) => {
-    if(!message.content.startsWith(commandPrefix) 
-    || message.author.bot 
-    || message.channel.name !== 'valheim-bot') return;
+    if(!message.content.startsWith(commandPrefix) || message.author.bot) return;
     
     const args = message.content.slice(commandPrefix.length).split(/ +/);
     const command = args.shift().toLowerCase();
     let possibleCommands = '';
     
-    var allCommands = Object.values(CommandTypes);
-    allCommands.forEach(command => {
+    Object.values(commands).forEach(command => {
             possibleCommands=`${possibleCommands}!${command}\n`
     });
     
     console.log(`Got command ${command}`);
     switch(command) {
-        case CommandTypes.PING: {
+        case commands.get('HELP'): {
+            sendMessage(message, `Here is the list of possible commands:\n${possibleCommands}`);
+            break;
+        }
+
+        case commands.get('PING'): {
             sendMessage(message, 'pong');
             break;
         }
 
-        case CommandTypes.ECHO: {
+        case commands.get('ECHO'): {
             const embed = new EmbedBuilder()
             .setAuthor({
                 name: message.author.username,
@@ -65,102 +73,64 @@ client.on('messageCreate', (message) => {
             })
             .setDescription(`@everyone ${message.content.slice(commandPrefix.length + command.length)}`)
             .setColor('Gold');
-    
-            sendEmbedToChannel(embed);
+            checkMemberRolesForServerControl(message, () => sendEmbedToChannel(embed));
             break;
         }
 
-        case CommandTypes.NUMBER_OF_PLAYERS: {
-            exec(`cat ${serverLocation}${outputLogFilename} | egrep -o "Connections [0-9]{1,2}" | tail -1 | egrep -o "[0-9]{1,2}"`, (error, stdout) => {
+        case commands.get('NUMBER_OF_PLAYERS'): {
+            exec(`cat ${serverLocation}${outputLogFilename} | egrep -o "Connections [0-9]{1,2}" | tail -1 | egrep -o "[0-9]{1,2}"`, 
+            (error, stdout) => {
                 if(error !== null) {
                     sendMessage(message, `There was an error trying to find the number of players on the server`);
                     console.log(error.toString());
                 } else if (stdout !== null) {
-                    numberOfPlayersOnServer = stdout.toString().trim();
+                    let numberOfPlayersOnServer = stdout.toString().trim();
                     sendMessage(message, `There are currently ${numberOfPlayersOnServer} player(s) on the server`);
                 }
                }).unref();
                break; 
         }
+        
+        case commands.get('STOP_SERVER'): {
+            checkMemberRolesForServerControl(message, () => stopServer(message));
+            break;  
+        } 
+        
 
-        case CommandTypes.STOP_SERVER: {
-            let pidOfServer;
-            exec(`pidof -s ${serverProcessName}`, (error, stdout) => {
-                if (error !== null)  {
-                    sendMessage(message, 'Unable to find the status of the server. The server must be offline');
-                    console.log(error.toString()); 
-                } else if (stdout !== null) {
-                    pidOfServer = stdout.toString().trim();
-                    exec(`sudo kill -9 ${pidOfServer}`, (error, stdout) => {
-                        if(error !== null) {
-                            sendMessage(message, 'Error when trying to kill the server');
-                            console.log(error.toString());
-                        } else if (stdout !== null) {
-                            sendMessage(message, 'Server has been shut down');
-                        }
-                    }).unref();
-                }	 
-            }).unref();
+        case commands.get('START_SERVER'): {
+            if (processIsRunning(serverProcessName)) {
+                sendMessage(message, 'Server is currently online already, please !stop_server first.');
+            } else {
+                sendMessage(message, 'Attempting to bring the server online. Type !status for details');
+                timeOfLastRestart = new Date(Date.now());
+                executeStartScript(message); 
+            }
             break;
         }
 
-        case CommandTypes.START_SERVER: {
-            exec(`pidof -s ${serverProcessName}`, (error, stdout) => {
-                if (error !== null)  {
-                    sendMessage(message, 'Attempting to bring the server online. Type !status for details');
-                    timeOfLastRestart = new Date(Date.now());
-                    executeStartScript(message); 
-                } else if (stdout !== null) {
-                    sendMessage(message, 'Server is currently online already, please !stop_server first.');
-                }	 
-            }).unref();
-            break;
-        }
+        case commands.get('STATUS'): {
+            if (processIsRunning(serverProcessName)) {
+                let timeOfServerBootInLogs = new Date(getLastStartTimeOfServerInLogs(`${serverLocation}${outputLogFilename}`));
+                if (timeOfLastRestart === null) {
+                    console.log(`Time of lastRestart is null`);
+                    timeOfLastRestart = timeOfServerBootInLogs;
+                }
 
-        case CommandTypes.STATUS: {
-            let pidOfServer;
-            exec(`pidof -s ${serverProcessName}`, (error, stdout) => {
-                if (error !== null)  {
-                    sendMessage(message, 'Unable to find the status of the server. The server must be offline');
-                    console.log(error.toString()); 
-                } else if (stdout !== null) {
-                    pidOfServer = stdout.toString().trim();
-                    exec(`ps -p ${pidOfServer} -o etime | egrep '[0-9]{1,2}:[0-9]{1,2}'`, (error, stdout) => {
-                        if(error !== null) {
-                            sendMessage(message, 'Unable to find the status of the server. The server must be offline');
-                            console.log(error.toString());
-                        } else if (stdout !== null) {
-                            exec(`cat ${serverLocation}output.log | grep "Load world:" | tail -1`, (error, stdout) => {
-                                if(error !== null) {
-                                    console.log(error.toString());                        
-                                } else if (stdout !== null) {
-                                    let timeOfServerBootInLogs = new Date(stdout.toString().trim().slice(0, 18));
-                                    if (timeOfLastRestart === null) {
-                                        console.log(`Time of lastRestart is null`);
-                                        timeOfLastRestart = timeOfServerBootInLogs;
-                                    }
-                                    console.log(`Time of ${timeOfServerBootInLogs}`)
-                                    if (timeOfLastRestart > timeOfServerBootInLogs) {
-                                        sendMessage(message, 'Server is still booting back up');
-                                    } else {
-                                        timeOfLastRestart = timeOfServerBootInLogs;
-                                        sendMessage(message, `Server has been online since ${timeOfServerBootInLogs.toString()}`);	
-                                    }
-                                }
-                            }).unref()
-                        }
-                    }).unref();
-                }	 
-            }).unref();
-            break;
+                console.log(`Time of ${timeOfServerBootInLogs}`)
+                if (timeOfLastRestart > timeOfServerBootInLogs) {
+                    sendMessage(message, 'Server is still booting back up');
+                } else {
+                    timeOfLastRestart = timeOfServerBootInLogs;
+                    sendMessage(message, `Server has been online since ${timeOfServerBootInLogs.toString()}`);	
+                }          
+            } else {
+                sendMessage(message, `Server is offline`);
+            }   
+            break;      
         }
+    
 
-        case CommandTypes.HELP: {
-            sendMessage(message, `Here is the list of possible commands:\n${possibleCommands}`);
-            break;
-        }
-
-        case CommandTypes.ROLL: {
+        case commands.get('ROLL'): {
             var maxValueToRoll = new Number(args[0]);
             var rolledValue = Math.floor(Math.random() * (maxValueToRoll - 1) + 1);
             sendMessage(message, `You rolled a ${rolledValue}`);
@@ -174,14 +144,29 @@ client.on('messageCreate', (message) => {
     }
 });
 
+function stopServer(message) {
+    exec(`pidof -s ${serverProcessName}`, (error, stdout) => {
+        if (error !== null) {
+            sendMessage(message, 'Unable to find the status of the server. The server must be offline');
+            console.log(error.toString());
+        } else if (stdout !== null) {
+            exec(`sudo kill -9 ${stdout.toString().trim()}`, (error, stdout) => {
+                if (error !== null) {
+                    sendMessage(message, 'Error when trying to kill the server');
+                    console.log(error.toString());
+                } else if (stdout !== null) {
+                    sendMessage(message, 'Server has been shut down');
+                }
+            }).unref();
+        }
+    }).unref();
+}
+
 function executeStartScript(message) {
-    execFile(`${serverLocation}./${serverExecutableName}`, (error, stdout, stderr) => {
+    execFile(`${serverLocation}./${serverExecutableName}`, (error, stdout) => {
         if (error !== null) {
             sendMessage(message, 'There was an error when trying to start the server');
             console.log(error.toString());
-        } else if (stderr != null) {
-            sendMessage(message, 'There was an error when trying to start the server');
-            console.log(stderr.toString());
         } else {
             sendMessage(message, 'Starting Server!')
             console.log(stdout.toString());
@@ -201,4 +186,13 @@ function sendMessage(message, messageToSend) {
 function sendEmbedToChannel(embed) {
     client.channels.fetch(generalChannel).then(channel => channel.send({embeds: [embed]}));
 }
+
+function checkMemberRolesForServerControl(message, fn) {
+    if (message.member.roles.cache.some(role => serverControlRolls.includes(role.name))) {
+        fn();
+    } else {
+        sendMessage(message, `Sorry, you don't have permission for that command`);
+    }
+}
+
 client.login(botSecret);
