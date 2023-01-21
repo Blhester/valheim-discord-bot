@@ -19,5 +19,5 @@ export function getLastStartTimeOfServerInLogs(outputLogPath) {
         console.log('Unable to find a startTime in the logs');
     }
  
-    return startTime;
+    return startTime.toString().trim().slice(0, 18);
 }
