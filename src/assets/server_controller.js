@@ -9,7 +9,7 @@ export function processIsRunning(serverProcessName) {
         console.log(stderr.toString());
     }
 
-    if (stdout !== null) isRunning = true;
+    stdout.on('data', isRunning = true);
 
     return isRunning;
 }
@@ -23,10 +23,8 @@ export function getLastStartTimeOfServerInLogs(outputLogPath) {
         console.log(stderr.toString());
     }
 
-    if (stdout !== null) {
-        console.log(stdout.toString());
-        startTime = new Date(stdout.toString().trim().slice(0, 18));
-    }
-
+    stdout.on('data', (data) => {
+        startTime = new Date(data.toString().trim().slice(0, 18));
+    }); 
     return startTime;
 }
