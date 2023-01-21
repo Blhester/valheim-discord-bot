@@ -22,7 +22,7 @@ const client = new Client({intents: [
     GatewayIntentBits.MessageContent, 
     GatewayIntentBits.GuildMessages, 
     GatewayIntentBits.GuildMembers]});
-var timeOfLastRestart;
+var timeOfLastRestart = null;
 
 client.once('ready', () => {
     console.log('Valorant Bot is online!');
@@ -115,9 +115,7 @@ client.on('messageCreate', (message) => {
                     console.log(`Time of lastRestart is null`);
                     timeOfLastRestart = timeOfServerBootInLogs;
                 }
-
-                console.log(`Time of serverStart in logs ${timeOfServerBootInLogs}`);
-                console.log(`Time of lastRestart ${timeOfLastRestart}`);
+                
                 if (timeOfLastRestart > timeOfServerBootInLogs) {
                     sendMessage(message, 'Server is still booting back up');
                 } else {
