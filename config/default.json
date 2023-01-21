@@ -2,14 +2,25 @@
     "bot" : {
         "secret": "",
         "commandPrefix": "!",
+        "commands": {
+            "HELP": "help",
+            "PING": "ping",
+            "ECHO": "echo",
+            "NUMBER_OF_PLAYERS": "players",
+            "STOP_SERVER": "stop_server",
+            "START_SERVER": "start_server",
+            "STATUS": "status",
+            "ROLL": "roll"
+        },
         "channels": {
             "general": "1064934406080430180"
-        }
+        },
+        "serverControlRolls": ["Trinary Visionary", "Trinary Engineer", "Trinary Enthusiast"]
     },
     "server": {
         "serverLocation": "/home/pi/valheim_server/",
         "serverProcessName": "valheim_server.x86_64",
         "serverExecutableName": "start_server.sh",
         "outputLogFilename": "output.log"
-    } 
+    }
 }
