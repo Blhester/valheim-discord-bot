@@ -3,15 +3,12 @@ import { exec } from "child_process";
 
 export function processIsRunning(serverProcessName) {
     let isRunning = false;
-    exec(`pidof -s ${serverProcessName}`, (error, stdout) => {
+    const {stdout} = exec(`pidof -s ${serverProcessName}`, (error) => {
         if (error !== null) {
             console.log(error.toString());
-            return;
-        } else if (stdout !== null) {
-            isRunning = true;
-            return;
-        }
+        } 
     });
+    if (stdout !== null) isRunning = true;
     return isRunning;
 }
 
