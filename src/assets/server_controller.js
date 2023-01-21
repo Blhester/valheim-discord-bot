@@ -8,7 +8,7 @@ export function processIsRunning(serverProcessName) {
         return false;
     }
 
-    return false;
+    return true;
 }
 
 export function getLastStartTimeOfServerInLogs(outputLogPath) {
