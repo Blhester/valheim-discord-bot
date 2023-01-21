@@ -24,6 +24,7 @@ export function getLastStartTimeOfServerInLogs(outputLogPath) {
     }
 
     if (stdout !== null) {
+        console.log(stdout.toString());
         startTime = new Date(stdout.toString().trim().slice(0, 18));
     }
 

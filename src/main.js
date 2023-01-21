@@ -110,7 +110,7 @@ client.on('messageCreate', (message) => {
 
         case commands.get('STATUS'): {
             if(processIsRunning(serverProcessName)) {
-                let timeOfServerBootInLogs = getLastStartTimeOfServerInLogs(serverLocation+outputLogFilename);
+                let timeOfServerBootInLogs = getLastStartTimeOfServerInLogs(`${serverLocation}${outputLogFilename}`);
                 if (timeOfLastRestart === null) {
                     console.log(`Time of lastRestart is null`);
                     timeOfLastRestart = timeOfServerBootInLogs;
