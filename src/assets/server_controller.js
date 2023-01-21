@@ -6,7 +6,7 @@ export function processIsRunning(serverProcessName) {
     const {stdout, stderr} = exec(`pidof -s ${serverProcessName}`);
 
     if (stderr !== null) {
-        console.log(error.toString());
+        console.log(stderr.toString());
     }
 
     if (stdout !== null) isRunning = true;
@@ -20,7 +20,7 @@ export function getLastStartTimeOfServerInLogs(outputLogPath) {
     
     if (stderr !== null) {
         new Error('Unable to find a startTime in the logs');
-        console.log(error.toString());
+        console.log(stderr.toString());
     }
 
     if (stdout !== null) {
