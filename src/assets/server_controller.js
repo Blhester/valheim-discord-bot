@@ -9,7 +9,7 @@ export function processIsRunning(serverProcessName) {
             return true;
         }
         return false; 
-    });
+    }).unref();
 }
 
 export function getLastStartTimeOfServerInLogs(outputLogPath) {
@@ -20,5 +20,5 @@ export function getLastStartTimeOfServerInLogs(outputLogPath) {
         } else if (stdout !== null) {
             return new Date(stdout.toString().trim().slice(0, 18));
         }
-    });
+    }).unref();
 }
