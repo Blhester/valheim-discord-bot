@@ -78,7 +78,8 @@ client.on('messageCreate', (message) => {
         }
 
         case commands.get('NUMBER_OF_PLAYERS'): {
-            exec(`cat ${serverLocation}${outputLogFilename} | egrep -o "Connections [0-9]{1,2}" | tail -1 | egrep -o "[0-9]{1,2}"`, (error, stdout) => {
+            exec(`cat ${serverLocation}${outputLogFilename} | egrep -o "Connections [0-9]{1,2}" | tail -1 | egrep -o "[0-9]{1,2}"`, 
+            (error, stdout) => {
                 if(error !== null) {
                     sendMessage(message, `There was an error trying to find the number of players on the server`);
                     console.log(error.toString());
@@ -97,40 +98,32 @@ client.on('messageCreate', (message) => {
         
 
         case commands.get('START_SERVER'): {
-            try {
-                if (processIsRunning(serverProcessName)) {
-                    sendMessage(message, 'Server is currently online already, please !stop_server first.');
-                } else {
-                    sendMessage(message, 'Attempting to bring the server online. Type !status for details');
-                    timeOfLastRestart = new Date(Date.now());
-                    executeStartScript(message); 
-                }
-            } catch (error) {
-                sendMessage(message, error.message);
+            if (processIsRunning(serverProcessName)) {
+                sendMessage(message, 'Server is currently online already, please !stop_server first.');
+            } else {
+                sendMessage(message, 'Attempting to bring the server online. Type !status for details');
+                timeOfLastRestart = new Date(Date.now());
+                executeStartScript(message); 
             }
             break;
         }
 
         case commands.get('STATUS'): {
-            try {
-                if(processIsRunning(serverProcessName)) {
-                    let timeOfServerBootInLogs = getLastStartTimeOfServerInLogs(serverLocation+outputLogFilename);
-                    if (timeOfLastRestart === null) {
-                        console.log(`Time of lastRestart is null`);
-                        timeOfLastRestart = timeOfServerBootInLogs;
-                    }
+            if(processIsRunning(serverProcessName)) {
+                let timeOfServerBootInLogs = getLastStartTimeOfServerInLogs(serverLocation+outputLogFilename);
+                if (timeOfLastRestart === null) {
+                    console.log(`Time of lastRestart is null`);
+                    timeOfLastRestart = timeOfServerBootInLogs;
+                }
 
-                    console.log(`Time of ${timeOfServerBootInLogs}`)
-                    if (timeOfLastRestart > timeOfServerBootInLogs) {
-                        sendMessage(message, 'Server is still booting back up');
-                    } else {
-                        timeOfLastRestart = timeOfServerBootInLogs;
-                        sendMessage(message, `Server has been online since ${timeOfServerBootInLogs.toString()}`);	
-                    }          
-                }   
-            } catch (error) {
-                sendMessage(message, error.message);
-            }
+                console.log(`Time of ${timeOfServerBootInLogs}`)
+                if (timeOfLastRestart > timeOfServerBootInLogs) {
+                    sendMessage(message, 'Server is still booting back up');
+                } else {
+                    timeOfLastRestart = timeOfServerBootInLogs;
+                    sendMessage(message, `Server has been online since ${timeOfServerBootInLogs.toString()}`);	
+                }          
+            }   
             break;      
         }
     
