@@ -92,7 +92,7 @@ client.on('messageCreate', (message) => {
         }
         
         case commands.get('STOP_SERVER'): {
-            checkMemberRolesForServerControl(message, stopServer(message, pidOfServer));
+            checkMemberRolesForServerControl(message, () => stopServer(message, pidOfServer));
             break;  
         } 
         
