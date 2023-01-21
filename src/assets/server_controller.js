@@ -9,7 +9,9 @@ export function processIsRunning(serverProcessName) {
         console.log(stderr.toString());
     }
 
-    stdout.on('data', isRunning = true);
+    stdout.on('data', () => {
+        isRunning = true
+    });
 
     return isRunning;
 }
