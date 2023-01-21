@@ -3,9 +3,9 @@ import { exec } from "child_process";
 
 export function processIsRunning(serverProcessName) {
     let isRunning = false;
-    const {stdout, error} = exec(`pidof -s ${serverProcessName}`);
+    const {stdout, stderr} = exec(`pidof -s ${serverProcessName}`);
 
-    if (error !== null) {
+    if (stderr !== null) {
         console.log(error.toString());
     }
 
@@ -16,9 +16,9 @@ export function processIsRunning(serverProcessName) {
 
 export function getLastStartTimeOfServerInLogs(outputLogPath) {
     let startTime;
-    const {stdout, error} = exec(`cat ${outputLogPath} | grep "Load world:" | tail -1`);
+    const {stdout, stderr} = exec(`cat ${outputLogPath} | grep "Load world:" | tail -1`);
     
-    if (error !== null) {
+    if (stderr !== null) {
         new Error('Unable to find a startTime in the logs');
         console.log(error.toString());
     }
