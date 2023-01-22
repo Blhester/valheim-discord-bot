@@ -151,6 +151,7 @@ client.on('messageCreate', (message) => {
             } else {
                 sendMessage(message, `I played ${botsValue}, you lose!`);
             }
+            break;
         }
 
         default: {
