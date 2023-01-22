@@ -10,7 +10,10 @@
             "STOP_SERVER": "stop_server",
             "START_SERVER": "start_server",
             "STATUS": "status",
-            "ROLL": "roll"
+            "ROLL": "roll",
+            "ROCK": "rock",
+            "PAPER": "paper",
+            "SCISSORS": "scissors"
         },
         "channels": {
             "general": "1064934406080430180"

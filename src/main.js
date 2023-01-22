@@ -22,7 +22,7 @@ const client = new Client({intents: [
     GatewayIntentBits.MessageContent, 
     GatewayIntentBits.GuildMessages, 
     GatewayIntentBits.GuildMembers]});
-var timeOfLastRestart = null;
+var timeOfLastRestart;
 
 client.once('ready', () => {
     console.log('Valorant Bot is online!');
@@ -131,9 +131,26 @@ client.on('messageCreate', (message) => {
 
         case commands.get('ROLL'): {
             var maxValueToRoll = new Number(args[0]);
-            var rolledValue = Math.floor(Math.random() * (maxValueToRoll - 1) + 1);
+            var rolledValue = Math.floor(Math.random() * maxValueToRoll);
             sendMessage(message, `You rolled a ${rolledValue}`);
             break;
+        }
+
+        case commands.get('ROCK'):
+        case commands.get('PAPER'):
+        case commands.get('SCISSORS'): {
+            let array = ['rock', 'paper', 'scissors'];
+
+            var botsValue = array[Math.floor(Math.random() * 3)];
+            var playerWins = playerWins(command, botsValue);
+
+            if (playerWins === null) {
+                sendMessage(message, `I played ${botsValue}, we tied!`);
+            } else if (playerWins) {
+                sendMessage(message, `I played ${botsValue}, you win!`);
+            } else {
+                sendMessage(message, `I played ${botsValue}, you lose!`);
+            }
         }
 
         default: {
@@ -166,7 +183,7 @@ function executeStartScript(message) {
         if (error !== null) {
             sendMessage(message, 'There was an error when trying to start the server');
             console.log(error.toString());
-        } else {
+        } else if (stdout !== null) {
             sendMessage(message, 'Starting Server!')
             console.log(stdout.toString());
         } 
@@ -191,6 +208,24 @@ function checkMemberRolesForServerControl(message, fn) {
         fn();
     } else {
         sendMessage(message, `Sorry, you don't have permission for that command`);
+    }
+}
+
+function playerWins(command, botsValue) {
+    if (command === null ||
+        botsValue === null ||
+        command === botsValue) return null;
+
+    switch(command) {
+        case 'rock': {
+            return botsValue === 'paper' ? false : true;
+        }
+        case 'paper': {
+            return botsValue === 'scissors' ? false : true;
+        }
+        case 'scissors': {
+            return botsValue === 'rock' ? false : true;
+        }
     }
 }
 
