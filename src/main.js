@@ -22,7 +22,7 @@ const client = new Client({intents: [
     GatewayIntentBits.MessageContent, 
     GatewayIntentBits.GuildMessages, 
     GatewayIntentBits.GuildMembers]});
-var timeOfLastRestart = null;
+var timeOfLastRestart;
 
 client.once('ready', () => {
     console.log('Valorant Bot is online!');
@@ -166,7 +166,7 @@ function executeStartScript(message) {
         if (error !== null) {
             sendMessage(message, 'There was an error when trying to start the server');
             console.log(error.toString());
-        } else {
+        } else if (stdout !== null) {
             sendMessage(message, 'Starting Server!')
             console.log(stdout.toString());
         } 
