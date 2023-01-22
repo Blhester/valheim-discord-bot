@@ -142,7 +142,7 @@ client.on('messageCreate', (message) => {
             let array = ['rock', 'paper', 'scissors'];
 
             var botsValue = array[Math.floor(Math.random() * 3)];
-            var playerWins = playerWins(command, botsValue);
+            let playerWins = checkIfPlayerWins(command, botsValue);
 
             if (playerWins === null) {
                 sendMessage(message, `I played ${botsValue}, we tied!`);
@@ -211,7 +211,7 @@ function checkMemberRolesForServerControl(message, fn) {
     }
 }
 
-function playerWins(command, botsValue) {
+function checkIfPlayerWins(command, botsValue) {
     if (command === null ||
         botsValue === null ||
         command === botsValue) return null;
@@ -225,6 +225,9 @@ function playerWins(command, botsValue) {
         }
         case 'scissors': {
             return botsValue === 'rock' ? false : true;
+        }
+        default : {
+            return null;
         }
     }
 }
