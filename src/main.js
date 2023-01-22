@@ -50,22 +50,22 @@ client.on('messageCreate', (message) => {
     let possibleCommands = '';
     
     Object.values(commands).forEach(command => {
-            possibleCommands=`${possibleCommands}!${command}\n`
+            possibleCommands=`${possibleCommands}!${command.get('commandName')} : ${command.get('commandDescription')}\t\n`
     });
     
     console.log(`Got command ${command}`);
     switch(command) {
-        case commands.get('HELP'): {
+        case commands.get('HELP.commandName'): {
             sendMessage(message, `Here is the list of possible commands:\n${possibleCommands}`);
             break;
         }
 
-        case commands.get('PING'): {
+        case commands.get('PING.commandName'): {
             sendMessage(message, 'pong');
             break;
         }
 
-        case commands.get('ECHO'): {
+        case commands.get('ECHO.commandName'): {
             const embed = new EmbedBuilder()
             .setAuthor({
                 name: message.author.username,
@@ -77,7 +77,7 @@ client.on('messageCreate', (message) => {
             break;
         }
 
-        case commands.get('NUMBER_OF_PLAYERS'): {
+        case commands.get('NUMBER_OF_PLAYERS.commandName'): {
             exec(`cat ${serverLocation}${outputLogFilename} | egrep -o "Connections [0-9]{1,2}" | tail -1 | egrep -o "[0-9]{1,2}"`, 
             (error, stdout) => {
                 if(error !== null) {
@@ -91,13 +91,13 @@ client.on('messageCreate', (message) => {
                break; 
         }
         
-        case commands.get('STOP_SERVER'): {
+        case commands.get('STOP_SERVER.commandName'): {
             checkMemberRolesForServerControl(message, () => stopServer(message));
             break;  
         } 
         
 
-        case commands.get('START_SERVER'): {
+        case commands.get('START_SERVER.commandName'): {
             if (processIsRunning(serverProcessName)) {
                 sendMessage(message, 'Server is currently online already, please !stop_server first.');
             } else {
@@ -108,10 +108,10 @@ client.on('messageCreate', (message) => {
             break;
         }
 
-        case commands.get('STATUS'): {
+        case commands.get('STATUS.commandName'): {
             if (processIsRunning(serverProcessName)) {
                 let timeOfServerBootInLogs = new Date(getLastStartTimeOfServerInLogs(`${serverLocation}${outputLogFilename}`));
-                if (timeOfLastRestart === null) {
+                if (timeOfLastRestart == null) {
                     console.log(`Time of lastRestart is null`);
                     timeOfLastRestart = timeOfServerBootInLogs;
                 }
@@ -129,16 +129,22 @@ client.on('messageCreate', (message) => {
         }
     
 
-        case commands.get('ROLL'): {
+        case commands.get('ROLL.commandName'): {
             var maxValueToRoll = new Number(args[0]);
+            if (maxValueToRoll == null) {
+                var rolledValue = Math.floor(Math.random() * maxValueToRoll);
+                sendMessage(message, `Rolling out of a max default value of 20.
+                You rolled ${rolledValue}`);
+                break;
+            }
             var rolledValue = Math.floor(Math.random() * maxValueToRoll);
-            sendMessage(message, `You rolled a ${rolledValue}`);
+            sendMessage(message, `You rolled ${rolledValue}`);
             break;
         }
 
-        case commands.get('ROCK'):
-        case commands.get('PAPER'):
-        case commands.get('SCISSORS'): {
+        case commands.get('ROCK.commandName'):
+        case commands.get('PAPER.commandName'):
+        case commands.get('SCISSORS.commandName'): {
             let array = ['rock', 'paper', 'scissors'];
 
             var botsValue = array[Math.floor(Math.random() * 3)];

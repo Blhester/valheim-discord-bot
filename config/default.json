@@ -3,17 +3,50 @@
         "secret": "",
         "commandPrefix": "!",
         "commands": {
-            "HELP": "help",
-            "PING": "ping",
-            "ECHO": "echo",
-            "NUMBER_OF_PLAYERS": "players",
-            "STOP_SERVER": "stop_server",
-            "START_SERVER": "start_server",
-            "STATUS": "status",
-            "ROLL": "roll",
-            "ROCK": "rock",
-            "PAPER": "paper",
-            "SCISSORS": "scissors"
+            "HELP": {
+                "commandName": "help",
+                "commandDescription": "Displays the available commands and descriptions."
+            },
+            "PING": {
+                "commandName": "ping",
+                "commandDescription": "Returns a pong response from the bot to check bot availability."
+            },
+            "ECHO": {
+                "commandName": "echo",
+                "commandDescription": "Prints a message to the General channel."
+            },
+            "NUMBER_OF_PLAYERS": {
+                "commandName": "players",
+                "commandDescription": "Displays the number of current players on the server. Note: May not be current if player just joined."
+            },
+            "STOP_SERVER": {
+                "commandName": "stop_server",
+                "commandDescription": "Stops the server. Note: Only certain permissions can shut down the server."
+            },
+            "START_SERVER": {
+                "commandName": "start_server",
+                "commandDescription": "I mean do you really need a description for this one?"
+            },
+            "STATUS": {
+                "commandName": "status",
+                "commandDescription": "Displays the last known start time of the server or determines if the server is still booting up."
+            },
+            "ROLL": {
+                "commandName": "roll",
+                "commandDescription": "Rolls a random number generator with the maximum value specified. Or 20 if no value is input."
+            },
+            "ROCK": {
+                "commandName": "rock",
+                "commandDescription": "paper > rock > scissors."
+            },
+            "PAPER": {
+                "commandName": "paper",
+                "commandDescription": "rock > paper > scissors"
+            },
+            "SCISSORS": {
+                "commandName": "scissors",
+                "commandDescription": "paper > scissors > rock"
+            }
         },
         "channels": {
             "general": "1064934406080430180"
