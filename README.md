@@ -1,4 +1,4 @@
-# valorant-discord-bot
+# valheim-discord-bot
 
 A simple bot that controls a steam dedicated server.
 
