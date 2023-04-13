@@ -197,7 +197,7 @@ function stopServer(message) {
 }
 
 function executeStartScript(message) {
-    execFile(`${serverLocation}${serverExecutableName}`, (error, stdout) => {
+    exec(`${serverLocation}./${serverExecutableName}`, (error, stdout) => {
         if (error !== null) {
             sendMessage(message, 'There was an error when trying to start the server. Sigh* contact the admin');
             console.log(error.toString());
@@ -209,7 +209,7 @@ function executeStartScript(message) {
 }
 
 function executeUpdateScript(message) {
-    execFile(`${serverLocation}${serverUpdateExecutable}`, (error, stdout) => {
+    exec(`${serverLocation}./${serverUpdateExecutable}`, (error, stdout) => {
         if (error !== null) {
             sendMessage(message, 'There was an error updating the server. Sigh* contact the admin');
             console.log(error.toString());
