@@ -205,7 +205,7 @@ function executeStartScript(message) {
             sendMessage(message, 'Starting Server!')
             console.log(stdout.toString());
         } 
-    });
+    }).unref();
 }
 
 function executeUpdateScript(message) {
@@ -217,7 +217,7 @@ function executeUpdateScript(message) {
             sendMessage(message, 'Server is updated! Please start the server back up.');
             console.log(stdout.toString());
         }
-    });
+    }).unref();
 }
 
 function sendMessage(message, messageToSend) {
