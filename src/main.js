@@ -16,6 +16,7 @@ const serverLocation = Config.get('server.serverLocation');
 const serverProcessName = Config.get('server.serverProcessName');
 const serverExecutableName = Config.get('server.serverExecutableName');
 const outputLogFilename = Config.get('server.outputLogFilename');
+const serverUpdateExecutable = Config.get('server.serverUpdateExecutable');
 
 const client = new Client({intents: [
     GatewayIntentBits.Guilds, 
