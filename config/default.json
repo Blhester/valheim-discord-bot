@@ -27,6 +27,10 @@
                 "commandName": "start_server",
                 "commandDescription": "I mean do you really need a description for this one?"
             },
+            "UPDATE_SERVER": {
+                "commandName": "update_server",
+                "commandDescription": "Updates the server"
+            },
             "STATUS": {
                 "commandName": "status",
                 "commandDescription": "Displays the last known start time of the server or determines if the server is still booting up."
@@ -54,9 +58,10 @@
         "serverControlRolls": ["Trinary Visionary", "Trinary Engineer", "Trinary Enthusiast"]
     },
     "server": {
-        "serverLocation": "/home/pi/valheim_server/",
+        "serverLocation": "/home/steam/valheim_server/",
         "serverProcessName": "valheim_server.x86_64",
         "serverExecutableName": "start_server.sh",
+        "serverUpdateExecutable": "install_update.sh",
         "outputLogFilename": "output.log"
     }
 }

@@ -108,6 +108,17 @@ client.on('messageCreate', (message) => {
             break;
         }
 
+        case commands.get('UPDATE_SERVER.commandName'): {
+            if(processIsRunning(serverProcessName)) {
+                sendMessage(message, 'Server is currently running, stopping server then updating the files.');
+                stopServer(message);
+                executeUpdateScript(message);
+            } else {
+                sendMessage(message, 'Installing server update.');
+                executeUpdateScript(message);
+            }
+        }
+
         case commands.get('STATUS.commandName'): {
             if (processIsRunning(serverProcessName)) {
                 let timeOfServerBootInLogs = new Date(getLastStartTimeOfServerInLogs(`${serverLocation}${outputLogFilename}`));
@@ -175,7 +186,7 @@ function stopServer(message) {
         } else if (stdout !== null) {
             exec(`sudo kill -9 ${stdout.toString().trim()}`, (error, stdout) => {
                 if (error !== null) {
-                    sendMessage(message, 'Error when trying to kill the server');
+                    sendMessage(message, 'Error when trying to kill the server. Sigh* contact the admin');
                     console.log(error.toString());
                 } else if (stdout !== null) {
                     sendMessage(message, 'Server has been shut down');
@@ -186,15 +197,27 @@ function stopServer(message) {
 }
 
 function executeStartScript(message) {
-    execFile(`${serverLocation}./${serverExecutableName}`, (error, stdout) => {
+    execFile(`${serverLocation}${serverExecutableName}`, (error, stdout) => {
         if (error !== null) {
-            sendMessage(message, 'There was an error when trying to start the server');
+            sendMessage(message, 'There was an error when trying to start the server. Sigh* contact the admin');
             console.log(error.toString());
         } else if (stdout !== null) {
             sendMessage(message, 'Starting Server!')
             console.log(stdout.toString());
         } 
-    }).unref();
+    });
+}
+
+function executeUpdateScript(message) {
+    execFile(`${serverLocation}${serverUpdateExecutable}`, (error, stdout) => {
+        if (error !== null) {
+            sendMessage(message, 'There was an error updating the server. Sigh* contact the admin');
+            console.log(error.toString());
+        } else if (stdout !== null) {
+            sendMessage(message, 'Server is updated! Please start the server back up.');
+            console.log(stdout.toString());
+        }
+    });
 }
 
 function sendMessage(message, messageToSend) {
